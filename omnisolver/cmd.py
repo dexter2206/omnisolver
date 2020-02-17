@@ -14,13 +14,26 @@ def get_all_adapters() -> Iterable[Adapter]:
 
     return adapters
 
+
 def main():
     """Entrypoint of omnisolver."""
     root_parser = argparse.ArgumentParser()
     common_parser = argparse.ArgumentParser()
-    common_parser.add_argument("--input", help="Path of the input BQM file in BQM format. If not specified, stdin is used.", type=argparse.FileType("r"), default="-")
-    common_parser.add_argument("--output", help="Path of the output file. If not specified, stdout is used.", type=argparse.FileType("w"), default="-")
-    common_parser.add_argument("--vartype", help="Variable type", choices=["SPIN", "BINARY"], default="BINARY")
+    common_parser.add_argument(
+        "--input",
+        help="Path of the input BQM file in BQM format. If not specified, stdin is used.",
+        type=argparse.FileType("r"),
+        default="-",
+    )
+    common_parser.add_argument(
+        "--output",
+        help="Path of the output file. If not specified, stdout is used.",
+        type=argparse.FileType("w"),
+        default="-",
+    )
+    common_parser.add_argument(
+        "--vartype", help="Variable type", choices=["SPIN", "BINARY"], default="BINARY"
+    )
 
     solver_commands = root_parser.add_subparsers(title="Solvers")
 
@@ -34,6 +47,7 @@ def main():
     result = args.sample(args)
 
     result.to_pandas_dataframe().to_csv(args.output)
+
 
 if __name__ == "__main__":
     main()
