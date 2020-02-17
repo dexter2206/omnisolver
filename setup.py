@@ -7,7 +7,7 @@ setup(
     entry_points={
         "console_scripts": ["omnisolver=omnisolver.cmd:main"]
     },
-    install_requires=["dimod"],
+    install_requires=["dimod", "typing_extensions"],
     tests_require=["pytest"],
     packages=find_packages(exclude=["tests"]),
 )
