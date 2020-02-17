@@ -63,8 +63,10 @@ class SimpleAdapter:
         for arg_spec in self.sample_args_spec:
             parser.add_argument(f"--{arg_spec['name']}", help=arg_spec["help"], type=self.type_mapping[arg_spec["type"]])
 
-        for arg_spec in self.sample_args_spec:
+        for arg_spec in self.init_args_spec:
             parser.add_argument(f"--{arg_spec['name']}", help=arg_spec["help"], type=self.type_mapping[arg_spec["type"]])
+
+        parser.set_defaults(sample=self.sample)
 
     def sample(self, cmd_args) -> dimod.SampleSet:
         sampler = self.create_sampler(cmd_args)
