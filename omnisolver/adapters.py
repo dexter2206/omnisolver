@@ -36,6 +36,7 @@ class SimpleAdapter:
         if specification["schema_version"] != 1:
             raise ValueError("Unknown version of specification file.")
         self.sample_args_spec = specification["sample_args"]
+        self.init_args_spec = specification["init_args"]
         self.module_path, self.class_name = specification["sampler_class"].rsplit(".", 1)
         self.parser_name = specification["parser_name"]
         self.description = specification["description"]
@@ -53,13 +54,21 @@ class SimpleAdapter:
 
     def create_sampler(self, cmd_args) -> dimod.Sampler:
         module = self.load_sampler_module()
-        # TODO: We only handle sample args. It would be cool if we handled __init__ args too.
-        return getattr(module, self.class_name)()  # Initialize new instance of our sampler class.
+        kwargs = {arg_spec["name"]: getattr(cmd_args, arg_spec["name"]) for arg_spec in self.sample_args_spec}
+        return getattr(module, self.class_name)(**kwargs)
 
     def add_argparse_subparser(self, root_group: argparse._SubParsersAction, parent: argparse.ArgumentParser):
         parser = root_group.add_parser(self.parser_name, parents=[parent], add_help=False)
+
         for arg_spec in self.sample_args_spec:
             parser.add_argument(f"--{arg_spec['name']}", help=arg_spec["help"], type=self.type_mapping[arg_spec["type"]])
 
-    def sample(self, sampler, cmd_args) -> dimod.SampleSet:
-        pass
+        for arg_spec in self.sample_args_spec:
+            parser.add_argument(f"--{arg_spec['name']}", help=arg_spec["help"], type=self.type_mapping[arg_spec["type"]])
+
+    def sample(self, cmd_args) -> dimod.SampleSet:
+        sampler = self.create_sampler(cmd_args)
+        kwargs = {arg_spec["name"]: getattr(cmd_args, arg_spec["name"]) for arg_spec in self.sample_args_spec}
+        with open(cmd_args.input) as bqm_file:
+            bqm = dimod.BinaryQuadraticModel.from_coo(cmd_args.input, vartype=cmd_args.vartype)
+        return sampler.sample_qubo(bqm, **kwargs)
