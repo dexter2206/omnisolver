@@ -8,7 +8,7 @@ sample_args:
     help: "probability of choosing 1 (default 0.5)"
     type: "float"
     default: 0.5
-  - name: "num_samples"
+  - name: "num_reads"
     help: "number of samples to draw"
     type: "int"
     default: 1
