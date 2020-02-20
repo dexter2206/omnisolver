@@ -44,6 +44,11 @@ def main():
 
     args = root_parser.parse_args()
 
+    if not hasattr(args, "sample"):
+        print("Missing argument. You need to supply solver name.")
+        root_parser.print_usage()
+        exit(1)
+
     result = args.sample(args)
 
     result.to_pandas_dataframe().to_csv(args.output)
