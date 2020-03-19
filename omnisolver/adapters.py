@@ -26,7 +26,7 @@ class Adapter(Protocol):
 
 class SimpleAdapter:
 
-    type_mapping = {"bool": bool, "int": int, "float": float}
+    type_mapping = {"bool": bool, "int": int, "float": float, "str": str}
 
     def __init__(self, specification) -> None:
         if specification["schema_version"] != 1:
@@ -65,22 +65,30 @@ class SimpleAdapter:
         )
 
         for arg_spec in self.sample_args_spec:
-            parser.add_argument(
-                f"--{arg_spec['name']}",
-                help=arg_spec["help"],
-                type=self.type_mapping[arg_spec["type"]],
-                default=arg_spec["default"],
-            )
+            self._add_argument(parser, arg_spec)
 
         for arg_spec in self.init_args_spec:
+            self._add_argument(parser, arg_spec)
+
+        parser.set_defaults(sample=self.sample)
+    
+    def _add_argument(self, parser, arg_spec):
+        if 'action' in arg_spec:
+            parser.add_argument(
+                f"--{arg_spec['name']}",
+                help=arg_spec["help"],
+                action=arg_spec['action']
+            )
+        elif 'default' in arg_spec:
             parser.add_argument(
                 f"--{arg_spec['name']}",
                 help=arg_spec["help"],
                 type=self.type_mapping[arg_spec["type"]],
                 default=arg_spec["default"],
             )
+        else:
+            raise NotImplemented("Argument spec must contain one of 'default' or 'action'")
 
-        parser.set_defaults(sample=self.sample)
 
     def sample(self, cmd_args) -> dimod.SampleSet:
         sampler = self.create_sampler(cmd_args)
