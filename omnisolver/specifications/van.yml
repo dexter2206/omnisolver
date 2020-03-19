@@ -40,6 +40,11 @@ init_args:
     help: "Value of epsilon (i.e. what we consider as zero)"
     type: "float"
     default: 1e-7
+
+  - name: "cuda"
+    help: "ID of GPU to use, -1 for disable"
+    type: "int"
+    default: 0
     
 sample_args:
   - name: "beta"
@@ -118,11 +123,6 @@ sample_args:
   - name: "print_grad"
     help: "print summary of gradients for each parameter on visual_step"
     action: "store_true"
-
-  - name: "cuda"
-    help: "ID of GPU to use, -1 for disable"
-    type: "int"
-    default: 0
 
   - name: "out_infix"
     help: "infix in output filename to distinguish repeated runs"
