@@ -183,6 +183,3 @@ class ModifiedSKModel(SKModel):
         self.J.requires_grad = True
 
         self.C_model = []
-
-        print('SK model with n = {},  field = {}, seed = {}'.format(
-            n, field, seed))
