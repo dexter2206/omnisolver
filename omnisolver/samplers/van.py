@@ -32,7 +32,7 @@ class VanSampler(dimod.Sampler):
         self.ham.J.requires_grad = False
 
 
-        self.net = MADE(**self.net_kwargs)
+        self.net = MADE(**self.net_params)
         self.net.to(self.device)
 
     def my_log(self, s):
