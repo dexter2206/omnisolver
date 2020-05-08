@@ -72,15 +72,15 @@ class SimpleAdapter:
             self._add_argument(parser, arg_spec)
 
         parser.set_defaults(sample=self.sample)
-    
+
     def _add_argument(self, parser, arg_spec):
-        if 'action' in arg_spec:
+        if "action" in arg_spec:
             parser.add_argument(
                 f"--{arg_spec['name']}",
                 help=arg_spec["help"],
-                action=arg_spec['action']
+                action=arg_spec["action"],
             )
-        elif 'default' in arg_spec:
+        elif "default" in arg_spec:
             parser.add_argument(
                 f"--{arg_spec['name']}",
                 help=arg_spec["help"],
@@ -88,8 +88,9 @@ class SimpleAdapter:
                 default=arg_spec["default"],
             )
         else:
-            raise NotImplemented("Argument spec must contain one of 'default' or 'action'")
-
+            raise NotImplemented(
+                "Argument spec must contain one of 'default' or 'action'"
+            )
 
     def sample(self, cmd_args) -> dimod.SampleSet:
         sampler = self.create_sampler(cmd_args)
