@@ -46,7 +46,8 @@ class SimpleAdapter:
         try:
             self.load_sampler_module()
             return True
-        except ImportError:
+        except ImportError as e:
+            print("{} is not available because: {}".format(self.parser_name, e))
             return False
 
     def create_sampler(self, cmd_args) -> dimod.Sampler:
