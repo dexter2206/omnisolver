@@ -4,8 +4,8 @@ import time
 import numpy as np
 from functools import partial
 import random
-from ...van_orig.src_hop_sk.sk import SKModel
-from ...van_orig.src_hop_sk.made2 import MADE
+from ..van_orig.src_hop_sk.sk import SKModel
+from ..van_orig.src_hop_sk.made2 import MADE
 
 class VanSampler(dimod.Sampler):
     """Implementatoin of simple random-sampler."""
