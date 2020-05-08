@@ -25,6 +25,8 @@ class VanSampler(dimod.Sampler):
             'epsilon': kwargs.pop('epsilon'),
             'device': self.device
         }
+        if len(d) > 0:
+            raise ValueError("Unknown arguments: {}".format(", ".join(kwargs.keys())))
 
 
     def _prepare_sampling(self, bqm, **kwargs):
@@ -176,10 +178,18 @@ class ModifiedSKModel(SKModel):
         self.seed = seed
         if seed > 0:
             torch.manual_seed(seed)
-        J = bqm.to_numpy_matrix()
+        J = self._bqm_to_couplings(bqm)
         self.J = torch.tensor(J, dtype=torch.float32)
         # Symmetric matrix, zero diagonal
         self.J = self.J.to(device)
         self.J.requires_grad = True
-
         self.C_model = []
+
+    def _bqm_to_couplings(self, bqm):
+        J = np.zeros((bqm.num_variables, bqm.num_variables))
+        h, JJ, offset = bqm.to_ising()
+        for (i, v) in h.items():
+            J[i, i] = v
+        for ((i, j), v) in JJ.items():
+            J[i, j] = v
+        return J
