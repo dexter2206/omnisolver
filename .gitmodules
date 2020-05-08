@@ -1,3 +1,3 @@
 [submodule "van"]
-	path = van_orig
+	path = omnisolver/van_orig
 	url = https://github.com/wdphy16/stat-mech-van
