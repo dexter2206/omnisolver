@@ -41,17 +41,18 @@ class VanSampler(dimod.Sampler):
         self.net.to(self.device)
 
     def my_log(self, s):
-        if self.out_filename:
-            with open(self.out_filename + ".log", "a", newline="\n") as f:
-                f.write(s + u"\n")
-        if not self.no_stdout:
-            print(s)
+        # if self.out_filename:
+        #     with open(self.out_filename + ".log", "a", newline="\n") as f:
+        #         f.write(s + u"\n")
+        # if not self.no_stdout:
+        #     print(s)
+        print(s)
 
     def sample(self, bqm, **kwargs):
         start_time = time.time()
+        print(bqm.num_variables)
         self._prepare_sampling(bqm)
         self.__dict__.update(kwargs)
-
         params = list(self.net.parameters())
         params = list(filter(lambda p: p.requires_grad, params))
         nparams = int(sum([np.prod(p.shape) for p in params]))
@@ -86,7 +87,7 @@ class VanSampler(dimod.Sampler):
 
                 sample_start_time = time.time()
                 with torch.no_grad():
-                    sample, x_hat = net.sample(self.batch_size)
+                    sample, x_hat = self.net.sample(self.batch_size)
                 assert not sample.requires_grad
                 assert not x_hat.requires_grad
                 sample_time += time.time() - sample_start_time

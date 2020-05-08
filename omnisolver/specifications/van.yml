@@ -67,7 +67,7 @@ sample_args:
     type: "int"
     default: 10000
 
-  - name: "Optimizer"
+  - name: "optimizer"
     help: "Optimizer"
     choices: ['sgd', 'sgdm', 'rmsprop', 'adam', 'adam0.5']
     type: "str"
