@@ -4,10 +4,6 @@ sampler_class: "omnisolver.samplers.van.VanSampler"
 description: "A sampler based on Variational Autoregressive Networks"
 
 init_args:
-  - name: "n"
-    help: "The number of spins"
-    type: "int"
-    default: 32
 
   - name: "net_depth"
     help: "The depth of the network"
