@@ -151,9 +151,8 @@ class VanSampler(dimod.Sampler):
 
             with open(self.fname, "a", newline="\n") as f:
                 f.write(
-                    "{} {} {:.3g} {:.8g} {:.8g} {:.8g} {:.8g}\n".format(
+                    "{} {:.3g} {:.8g} {:.8g} {:.8g} {:.8g}\n".format(
                         self.n,
-                        self.seed,
                         beta,
                         free_energy_mean.item(),
                         free_energy_std.item(),
