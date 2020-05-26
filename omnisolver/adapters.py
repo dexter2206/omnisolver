@@ -4,6 +4,8 @@ import importlib
 import dimod
 from typing_extensions import Protocol
 
+from omnisolver.serialization import bqm_from_coo
+
 
 class Adapter(Protocol):
     def __init__(self) -> None:
@@ -98,7 +100,6 @@ class SimpleAdapter:
             arg_spec["name"]: getattr(cmd_args, arg_spec["name"])
             for arg_spec in self.sample_args_spec
         }
-        bqm = dimod.BinaryQuadraticModel.from_coo(
-            cmd_args.input, vartype=cmd_args.vartype
-        )
+
+        bqm = bqm_from_coo(cmd_args.input, vartype=cmd_args.vartype)
         return sampler.sample(bqm, **kwargs)
