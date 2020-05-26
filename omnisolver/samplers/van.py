@@ -17,10 +17,8 @@ class VanSampler(dimod.Sampler):
 
     def __init__(self, **kwargs):
         d = kwargs.pop("cuda")
-        self.n = kwargs.pop("n")
         self.device = "cuda:{}".format(d) if d >= 0 else "cpu"
         self.net_params = {
-            "n": self.n,
             "net_depth": kwargs.pop("net_depth"),
             "net_width": kwargs.pop("net_width"),
             "bias": kwargs.pop("bias", False),
@@ -34,10 +32,11 @@ class VanSampler(dimod.Sampler):
             raise ValueError("Unknown arguments: {}".format(", ".join(kwargs.keys())))
 
     def _prepare_sampling(self, bqm, **kwargs):
-        self.ham = ModifiedSKModel(self.n, self.device, bqm)
+        self.ham = ModifiedSKModel(bqm.num_variables, self.device, bqm)
         self.ham.J.requires_grad = False
-
-        self.net = MADE(**self.net_params)
+        net_params = dict(self.net_params)
+        net_params["n"] = bqm.num_variables
+        self.net = MADE(**net_params)
         self.net.to(self.device)
 
     def my_log(self, s):
@@ -122,10 +121,10 @@ class VanSampler(dimod.Sampler):
                 train_time += time.time() - train_start_time
 
                 if self.print_step and step % self.print_step == 0:
-                    free_energy_mean = loss.mean() / beta / self.n
-                    free_energy_std = loss.std() / beta / self.n
-                    entropy_mean = -log_prob.mean() / self.n
-                    energy_mean = energy.mean() / self.n
+                    free_energy_mean = loss.mean() / beta / bqm.num_variables
+                    free_energy_std = loss.std() / beta / bqm.num_variables
+                    entropy_mean = -log_prob.mean() / bqm.num_variables
+                    energy_mean = energy.mean() / bqm.num_variables
                     mag = sample.mean(dim=0)
                     mag_mean = mag.mean()
                     if step > 0:
@@ -151,9 +150,8 @@ class VanSampler(dimod.Sampler):
 
             with open(self.fname, "a", newline="\n") as f:
                 f.write(
-                    "{} {} {:.3g} {:.8g} {:.8g} {:.8g} {:.8g}\n".format(
-                        self.n,
-                        self.seed,
+                    "{} {:.3g} {:.8g} {:.8g} {:.8g} {:.8g}\n".format(
+                        bqm.num_variables,
                         beta,
                         free_energy_mean.item(),
                         free_energy_std.item(),
@@ -164,7 +162,7 @@ class VanSampler(dimod.Sampler):
 
             beta += self.beta_inc
 
-        return dimod.SampleSet.from_samples(sample, energy=energy, vartype=bqm.vartype)
+        return dimod.SampleSet.from_samples(sample.cpu(), energy=energy.cpu(), vartype=bqm.vartype)
 
     @property
     def properties(self):
